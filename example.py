@@ -1,15 +1,6 @@
-#  VC-agent
-A python3 partial implementation of W3C Verifiable Credentials standard
+import vc_agent
+import json
 
-# Installation
-This script has the following prerequisites:
-* pip3 install pynacl 
-* pip3 install PyLD
-
-# Using
-The script can be used for singing and verifying credentials as follows (see also example.py).
-
-```Python
 credential = {
   '@context': [
     'https://www.w3.org/2018/credentials/v1',
@@ -37,13 +28,3 @@ singed_credential = vc_agent.issue(credential, signing_key)
 print(json.dumps(singed_credential, indent=2))
 verified = vc_agent.verify(singed_credential, verification_key)
 print("Verification Result: ",verified)
-```
-
-# Testing 
-Test are implemented using pytest. You can install it using
-* pip3 install pytest
-
-Tests are executed by invoking
-* python3 -m pytest -s tests/
-
-For smaller outputs append the above command with `--tb=short'

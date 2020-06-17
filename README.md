@@ -9,3 +9,8 @@ This script has the following prerequisites:
 # Testing 
 Test are implemented using pytest. You can install it using
 * pip3 install pytest
+
+Tests are executed by invoking
+* python3 -m pytest -s tests/
+
+For smaller outputs append the above command with `--tb=short'

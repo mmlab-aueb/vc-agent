@@ -19,24 +19,25 @@ sofie_credential = {
     "https://www.w3.org/2018/credentials/v1",
     "https://mm.aueb.gr/contexts/access_control/v1"
   ],
-  "id": "did:example:credential:1872",
+  "id": "https://www.sofie-iot.eu/credentials/examples/1",
   "type": [
     "VerifiableCredential"
   ],
-  "issuer": "did:example:credential-issuer",
+  "issuer": "did:nacl:E390CF3B5B93E921C45ED978737D89F61B8CAFF9DE76BFA5F63DA20386BCCA3B",
   "issuanceDate": "2010-01-01T19:23:24Z",
   "credentialSubject": {
-    "id": "did:example:credential-subject",
+    "id": "did:nacl:A490CF3B5B93E921C45ED978737D89F61B8CAFF9DE76BFA5F63DA20386BCCA62",
     "type": [
       "AllowedURLs"
     ],
     "acl": [
       {
-        "url": "http://fotiou.gr",
-        "methods": [
-          "GET",
-          "POST"
-        ]
+        "url": "http://sofie-iot.eu/device1",
+        "methods": ["GET","POST"]
+      },
+      {
+        "url": "http://sofie-iot.eu/device2",
+        "methods": ["GET"]
       }
     ]
   }
@@ -48,7 +49,7 @@ signing_key = {
 }
 
 verification_key = {
-    'id': 'did:example:credential-issuer#key0',
+    'id': 'did:nacl:E390CF3B5B93E921C45ED978737D89F61B8CAFF9DE76BFA5F63DA20386BCCA3B',
     'publicKeyHex': 'E390CF3B5B93E921C45ED978737D89F61B8CAFF9DE76BFA5F63DA20386BCCA3B'
 }
 

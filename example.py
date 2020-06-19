@@ -20,16 +20,12 @@ sofie_credential = {
     "https://mm.aueb.gr/contexts/access_control/v1"
   ],
   "id": "https://www.sofie-iot.eu/credentials/examples/1",
-  "type": [
-    "VerifiableCredential"
-  ],
+  "type": ["VerifiableCredential"],
   "issuer": "did:nacl:E390CF3B5B93E921C45ED978737D89F61B8CAFF9DE76BFA5F63DA20386BCCA3B",
   "issuanceDate": "2010-01-01T19:23:24Z",
   "credentialSubject": {
     "id": "did:nacl:A490CF3B5B93E921C45ED978737D89F61B8CAFF9DE76BFA5F63DA20386BCCA62",
-    "type": [
-      "AllowedURLs"
-    ],
+    "type": ["AllowedURLs"],
     "acl": [
       {
         "url": "http://sofie-iot.eu/device1",

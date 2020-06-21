@@ -4,7 +4,8 @@ import nacl.signing
 import nacl.encoding
 from pyld import jsonld
 from pyld.jsonld import JsonLdProcessor
-from jsonpath_ng import  parse, jsonpath
+from jsonpath_ng import jsonpath
+from jsonpath_ng.ext import parse
 
 
 def issue(credential, signing_key, documentloader=None):
@@ -88,7 +89,7 @@ def filter(credential, filters):
     :param credential: a python dict representing the credential
     :param [filters]:  pairs of  
         a json path query,
-        the value to serach
+        optinal, the value, or a list of values to serach
 
     :return: True or False
     """
@@ -97,7 +98,13 @@ def filter(credential, filters):
         jsonpath_expr = parse(filter[0])
         found = False
         for match in jsonpath_expr.find(credential):
-            if match.value == filter[1]:
+            if len(filter) == 2 and isinstance(filter[1], list):
+                if match.value in filter[1]:
+                    found = True
+            elif len(filter) == 2:
+                if match.value == filter[1]:
+                    found = True
+            else: #no value is required
                 found = True
         if not found:
             return False 

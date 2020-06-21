@@ -58,3 +58,12 @@ singed_credential = vc_agent.issue(sofie_credential, signing_key)
 print(json.dumps(singed_credential, indent=2))
 verified = vc_agent.verify(singed_credential, verification_key)
 print("Verification Result: ",verified)
+
+
+filters = [
+    ["$.@context[*]", "https://mm.aueb.gr/contexts/access_control/v1"],
+    ["$.issuer", "did:nacl:E390CF3B5B93E921C45ED978737D89F61B8CAFF9DE76BFA5F63DA20386BCCA3B"],
+    ["$.credentialSubject.acl[*].url", "http://sofie-iot.eu/device1"]
+  ]
+included = vc_agent.filter(sofie_credential, filters)
+print(included)

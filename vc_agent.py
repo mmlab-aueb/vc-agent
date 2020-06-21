@@ -4,6 +4,7 @@ import nacl.signing
 import nacl.encoding
 from pyld import jsonld
 from pyld.jsonld import JsonLdProcessor
+from jsonpath_ng import  parse, jsonpath
 
 
 def issue(credential, signing_key, documentloader=None):
@@ -81,3 +82,23 @@ def verify(singed_credential, verification_key, documentloader=None):
         return False
     
     
+def filter(credential, filters):
+    """ It verifies if a credential a some particular fieds/value pairs
+
+    :param credential: a python dict representing the credential
+    :param [filters]:  pairs of  
+        a json path query,
+        the value to serach
+
+    :return: True or False
+    """
+    
+    for filter in filters:
+        jsonpath_expr = parse(filter[0])
+        found = False
+        for match in jsonpath_expr.find(credential):
+            if match.value == filter[1]:
+                found = True
+        if not found:
+            return False 
+    return True

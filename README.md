@@ -3,12 +3,13 @@ A python3 partial implementation of W3C Verifiable Credentials standard
 
 # Installation
 This script has the following prerequisites:
-* pip3 install pynacl 
+* pip3 install jwcrypto 
 * pip3 install PyLD
 * pip3 install jsonpath-ng
 
 # Using
-The script can be used for singing and verifying credentials as follows (see also example.py).
+The script can be used for singing and verifying credentials as follows.
+See `examples.py` for a complete example. 
 
 ```Python
 credential = {

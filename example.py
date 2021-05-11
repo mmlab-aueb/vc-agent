@@ -1,6 +1,7 @@
 import vc_agent
 import json
 from jwcrypto import jwk
+from jwcrypto.common import base64url_encode
 
 key_issuer = jwk.JWK.generate(kty='OKP', crv='Ed25519')
 key_issuer_dict = key_issuer.export(private_key=True, as_dict=True)
@@ -19,16 +20,11 @@ sofie_credential = {
   "issuanceDate": "2010-01-01T19:23:24Z",
   "credentialSubject": {
     "id": "did:nacl:" + key_subject_dict['x'] ,
-    "type": ["AllowedURLs"],
-    "acl": [
-      {
-        "url": "http://sofie-iot.eu/device1",
-        "methods": ["GET","POST"]
-      },
-      {
-        "url": "http://sofie-iot.eu/device2",
-        "methods": ["GET"]
-      }
+    "type": ["VCforWOTaccess"],
+    "claims": [
+      "https://sofie-iot.eu/device1",
+      "https://sofie-iot.eu/device2",
+      "https://sofie-iot.eu/device3",
     ]
   }
 }
@@ -37,15 +33,16 @@ verification_method = "did:nacl:" + key_issuer_dict['x']
 verification_key = key_issuer_dict['x']
 signing_key = key_issuer_dict['d']
 
-singed_credential = vc_agent.issue(sofie_credential, signing_key, verification_method)
+singed_credential = vc_agent.issue(sofie_credential, signing_key, verification_method, None, True)
+verified = vc_agent.verify(singed_credential, verification_key, None, True)
 print(json.dumps(singed_credential, indent=2))
-verified = vc_agent.verify(singed_credential, verification_key)
 print("Verification Result: ",verified)
-
+access_token = base64url_encode(json.dumps(singed_credential))
+print(len(access_token))
 
 filters = [
     ["$.@context[*]", "https://mm.aueb.gr/contexts/access_control/v1"],
-    ["$.credentialSubject.acl[?(@.url='http://sofie-iot.eu/device1' & @.methods[*]='GET')]"]
+    ["$.credentialSubject.claims[*]", "https://sofie-iot.eu/device1"]
   ]
 '''
 Last filter is equivalent to

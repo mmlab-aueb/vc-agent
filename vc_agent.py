@@ -5,10 +5,11 @@ from pyld.jsonld import JsonLdProcessor
 from jsonpath_ng import jsonpath
 from jsonpath_ng.ext import parse
 from jwcrypto import jwk, jws
+import time
 
 
 
-def issue(credential, signing_key, verification_method, documentloader=None):
+def issue(credential, signing_key, verification_method, documentloader=None, benchmark=False):
     """ It signs a credential using Ed25519Signature2018 JSON-LD Signature
 
     :param credential: a python dict representing the credential
@@ -16,7 +17,7 @@ def issue(credential, signing_key, verification_method, documentloader=None):
     :param verification_method:  the signature verification method
     :param documentloader: a custom documentloader
 
-    :return: the credential with the singature appended
+    :return: the credential with the signature appended
     """
     credential = credential.copy()
     jws_header = {"alg": "EdDSA", "b64": False, "crit":["b64"]}
@@ -32,20 +33,22 @@ def issue(credential, signing_key, verification_method, documentloader=None):
     normalized_proof = jsonld.normalize(proof, {'algorithm': 'URDNA2015', 'format': 'application/n-quads'})
     doc_hash         = hashlib.sha256()
     proof_hash       = hashlib.sha256()
+    key_dict = {'kty': 'OKP', 'crv': 'Ed25519', 'd': signing_key, 'x': ''}
+    key_jwk = jwk.JWK(**key_dict)
+    start_time = time.time()
     doc_hash.update(normalized_doc.encode('utf-8'))
     proof_hash.update(normalized_proof.encode('utf-8'))
     to_sign       = proof_hash.digest() + doc_hash.digest()
-
-    key_dict = {'kty': 'OKP', 'crv': 'Ed25519', 'd': signing_key, 'x': ''}
-    key_jwk = jwk.JWK(**key_dict)
     jwsproof = jws.JWS(to_sign)
     jwsproof.add_signature(key_jwk, None, jws_header, None)
+    if benchmark:
+        print (f'*** {time.time() - start_time} \t VC signed')
     jwsproof.objects['payload']=''
     proof["jws"]  = jwsproof.serialize(compact=True)
     credential['proof'] = proof
     return credential
 
-def verify(singed_credential, verification_key, documentloader=None):
+def verify(singed_credential, verification_key, documentloader=None, benchmark=False):
     """ It signs a credential using Ed25519Signature2018 JSON-LD Signature
 
     :param singed_credential: a python dict representing the credential
@@ -64,29 +67,31 @@ def verify(singed_credential, verification_key, documentloader=None):
     normalized_proof = jsonld.normalize(proof, {'algorithm': 'URDNA2015', 'format': 'application/n-quads'})
     doc_hash         = hashlib.sha256()
     proof_hash       = hashlib.sha256()
-    doc_hash.update(normalized_doc.encode('utf-8'))
-    proof_hash.update(normalized_proof.encode('utf-8'))
-
     key_dict = {'kty': 'OKP', 'crv': 'Ed25519', 'x': verification_key}
     key_jwk = jwk.JWK(**key_dict)
+    start_time = time.time()
+    doc_hash.update(normalized_doc.encode('utf-8'))
+    proof_hash.update(normalized_proof.encode('utf-8'))
     payload       = proof_hash.digest() + doc_hash.digest()
     claimed_proof = jws.JWS()
     claimed_proof.deserialize(signature)
     claimed_proof.objects['payload'] = payload
     try:
         claimed_proof.verify(key_jwk)
+        if benchmark:
+            print (f'*** {time.time() - start_time} \t Signature verified')
         return True
     except:
         return False
     
     
 def filter(credential, filters):
-    """ It verifies if a credential a some particular fieds/value pairs
+    """ It verifies if a credential a some particular fields/value pairs
 
     :param credential: a python dict representing the credential
     :param [filters]:  pairs of  
         a json path query,
-        optinal, the value, or a list of values to serach
+        optional, the value, or a list of values to search
 
     :return: True or False
     """
